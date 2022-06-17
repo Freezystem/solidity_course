@@ -2,7 +2,26 @@ import Web3 from "web3/dist/web3.min.js";
 import Wallet from "./contracts/Wallet.json";
 
 const getWeb3 = () => {
-  return new Web3("http://127.0.0.1:9545");
+  return new Promise((resolve, reject) => {
+    window.addEventListener("load", async () => {
+      if ( window.ethereum ) {
+        const web3 = new Web3(window.ethereum);
+        try {
+          await web3.ethereum.enable();
+          resolve(web3);
+        }
+        catch ( error ) {
+          reject(error);
+        }
+      }
+      else if ( window.web3 ) {
+        resolve(window.web3);
+      }
+      else {
+        reject("You MUST install MetaMask to use this App");
+      }
+    });
+  });
 };
 
 const getWallet = async web3 => {
